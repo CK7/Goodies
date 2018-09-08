@@ -1,4 +1,19 @@
 #!/usr/bin/perl
+# gen5.pl, written by Itai Sharon (itai.sharon@gmail.com). 
+# This is a simple NGS data simulator. It simply take the parameters and use them to geneeare paired-end reads with the desired insert
+# size and variability. It does not add errors of any kind.
+# Input (in this order): 
+# 1. A fasta file from which the data will be simulated
+# 2. Prefix for output files
+# 3. Desired coverage
+# 4. Desired insert size
+# 5. Desired insert size standard deviation
+# 6. Desired read size
+# 7. Optional: seed for srand(), default is 42
+# Output:
+# 1. <out-prefix>.log - log information for the process
+# 2. <out-prefix>_R1.fq - forward reads
+# 3. <out-prefix>_R2.fq - reverse reads
 use strict;
 use Bio::SeqIO;
 use Math::Random::OO::Normal;
@@ -52,8 +67,6 @@ while(my $seq_obj = $in->next_seq) {
 		$isize = $read_length if($isize < $read_length);
 
 		my $r2_start = $r1_start+$isize-$read_length;
-#print "$r1_start\t$r2_start\t$isize\t$insert_size, $insert_size_sd\n";
-#next;
 
 		if(($r1_start <= 0) || ($r1_start+$read_length-1 > $length)) {
 			print LOG "Skipping: impossible values for read 1: ($r1_start, ", ($r1_start+$read_length-1), "), sequence ", $seq_obj->display_id, ", length=$length\n";
